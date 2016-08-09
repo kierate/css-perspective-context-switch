@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Context Switch Concept using CSS Perspective</title>
+
+        <style>
+            body {
+                background-color: rgb(151, 206, 228);
+            }
+            /* for this demo we have a window and all divs inside
+               of it are the same size */
+            #window, #window > div {
+                width: 1050px;
+                height: 591px;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                margin-top: -295px;
+                margin-left: -525px;
+            }
+            /* we don't want to see the overflow when re-shaping the divs */
+            #window {
+                overflow: hidden;
+            }
+
+            /* the individual application layers */
+            #app-analytics {
+                background: url('app-analytics.png') no-repeat;
+            }
+            #app-builder {
+                background: url('app-builder.png') no-repeat;
+            }
+            #app-ads {
+                background: url('app-ads.png') no-repeat;
+            }
+            #app-listening {
+                background: url('app-listening.png') no-repeat;
+            }
+            /* app layers are placed above the layer that allows
+               switching and are only shown when active */
+            div.app {
+                z-index: 2;
+                display: none;
+            }
+            div.active-app {
+                display: block;
+            }
+            /* dummy header which all apps will have */
+            div.app div.header {
+                height: 56px;
+                cursor: pointer;
+            }
+
+            /* the "switcher" layer sits below the app layers and
+               allows selecting the app you want to switch to */
+            #switcher {
+                background: url('switcher.png') no-repeat;
+            }
+            div.select-app {
+                width: 179px;
+                height: 235px;
+                position: relative;
+                cursor: pointer;
+                float: left;
+                top: 166px;
+            }
+            div#select-app-analytics {
+                width: 197px;
+                height: 261px;
+                top: 153px;
+                left: 107px;
+            }
+            div#select-app-builder {
+                margin-left: 140px;
+            }
+            div#select-app-ads {
+                margin-left: 34px;
+            }
+            div#select-app-listening {
+                margin-left: 34px;
+            }
+
+            /* slide down and up; adjust the width/height of the div +
+               the perspective and rotateX to find the desired shape */
+            #window > .switch-down {
+                width: 1050px;
+                height: 1400px;
+                animation: switch-down 0.4s linear;
+                animation-fill-mode: forwards;
+            }
+            #window > .switch-up {
+                width: 1050px;
+                height: 1400px;
+                animation: switch-up 0.4s linear;
+                animation-fill-mode: forwards;
+            }
+            @keyframes switch-down {
+                0% {
+                    transform: perspective(1265px) rotateX(0deg);
+                }
+                100% {
+                    transform: perspective(1265px) rotateX(64deg);
+                }
+            }
+            @keyframes switch-up {
+                0% {
+                    transform: perspective(1265px) rotateX(64deg);
+                }
+                100% {
+                    transform: perspective(1265px) rotateX(0deg);
+                }
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="window">
+            <div id="switcher">
+                <div id="select-app-analytics" class="select-app" data-select-app="app-analytics"></div>
+                <div id="select-app-builder" class="select-app" data-select-app="app-builder"></div>
+                <div id="select-app-ads" class="select-app" data-select-app="app-ads"></div>
+                <div id="select-app-listening" class="select-app" data-select-app="app-listening"></div>
+            </div>
+
+            <div id="app-analytics" class="app active-app">
+                <div class="header"></div>
+                <div class="content"></div>
+            </div>
+
+            <div id="app-builder" class="app">
+                <div class="header"></div>
+                <div class="content"></div>
+            </div>
+
+            <div id="app-ads" class="app">
+                <div class="header"></div>
+                <div class="content"></div>
+            </div>
+
+            <div id="app-listening" class="app">
+                <div class="header"></div>
+                <div class="content"></div>
+            </div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script>
+            $('.header').click(function() {
+                $(this).parent().removeClass('switch-up').addClass('switch-down');
+            });
+
+            $('.select-app').click(function() {
+                var app = $(this).data('select-app');
+
+                // at the moment the new app simply replaces the old one
+                // but you can of course take this further with transitions/animations
+                $('.active-app').removeClass('active-app');
+                $('#' + app).addClass('active-app');
+
+                //the newly selected app starts at the bottom
+                $('#' + app).removeClass('switch-down').addClass('switch-up');
+            });
+        </script>
+    </body>
+</html>
